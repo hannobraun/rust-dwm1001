@@ -1,3 +1,5 @@
-target remote :3333
+target remote :2331
+mon reset
 load
+b main
 continue

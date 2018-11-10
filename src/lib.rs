@@ -9,13 +9,14 @@
 #![deny(warnings)]
 
 
-pub extern crate cortex_m;
-pub extern crate cortex_m_rt;
-pub extern crate dw1000;
-pub extern crate embedded_hal;
-pub extern crate nrf52832_hal;
+pub use cortex_m;
+pub use cortex_m_rt;
+pub use dw1000;
+pub use embedded_hal;
+pub use nrf52832_hal;
 
-extern crate cortex_m_semihosting;
+// #[allow(unused_imports)]
+// use cortex_m_semihosting;
 
 
 pub use dw1000::{
@@ -29,7 +30,7 @@ pub mod prelude {
     pub use nrf52832_hal::prelude::*;
 }
 
-pub mod debug;
+// pub mod debug;
 
 
 use cortex_m::{
@@ -49,7 +50,7 @@ use nrf52832_hal::{
         Input,
         Level,
     },
-    nrf52::{
+    nrf52832_pac::{
         self,
         CorePeripherals,
         Interrupt,
@@ -93,7 +94,7 @@ pub struct DWM1001 {
     ///
     /// This is only available if the `dev` feature is enabled.
     #[cfg(feature = "dev")]
-    pub uart: Uarte<nrf52::UARTE0>,
+    pub uart: Uarte<nrf52832_pac::UARTE0>,
 
     /// The DW_RST pin (P0.24 on the nRF52)
     ///
@@ -106,227 +107,227 @@ pub struct DWM1001 {
     pub DW_IRQ: DW_IRQ,
 
     /// DW1000 UWB transceiver
-    pub DW1000: DW1000<nrf52::SPIM2, dw1000::Uninitialized>,
+    pub DW1000: DW1000<nrf52832_pac::SPIM2, dw1000::Uninitialized>,
 
     /// LIS2DH12 3-axis accelerometer
     ///
     /// So far no driver exists for the LIS2DH12, so this provides direct access
     /// to the I2C bus it's connected to.
-    pub LIS2DH12: Twim<nrf52::TWIM1>,
+    pub LIS2DH12: Twim<nrf52832_pac::TWIM1>,
 
     /// Core peripheral: Cache and branch predictor maintenance operations
-    pub CBP: nrf52::CBP,
+    pub CBP: nrf52832_pac::CBP,
 
     /// Core peripheral: CPUID
-    pub CPUID: nrf52::CPUID,
+    pub CPUID: nrf52832_pac::CPUID,
 
     /// Core peripheral: Debug Control Block
-    pub DCB: nrf52::DCB,
+    pub DCB: nrf52832_pac::DCB,
 
     /// Core peripheral: Data Watchpoint and Trace unit
-    pub DWT: nrf52::DWT,
+    pub DWT: nrf52832_pac::DWT,
 
     /// Core peripheral: Flash Patch and Breakpoint unit
-    pub FPB: nrf52::FPB,
+    pub FPB: nrf52832_pac::FPB,
 
     /// Core peripheral: Floating Point Unit
-    pub FPU: nrf52::FPU,
+    pub FPU: nrf52832_pac::FPU,
 
     /// Core peripheral: Instrumentation Trace Macrocell
-    pub ITM: nrf52::ITM,
+    pub ITM: nrf52832_pac::ITM,
 
     /// Core peripheral: Memory Protection Unit
-    pub MPU: nrf52::MPU,
+    pub MPU: nrf52832_pac::MPU,
 
     /// Core peripheral: Nested Vector Interrupt Controller
-    pub NVIC: nrf52::NVIC,
+    pub NVIC: nrf52832_pac::NVIC,
 
     /// Core peripheral: System Control Block
-    pub SCB: nrf52::SCB,
+    pub SCB: nrf52832_pac::SCB,
 
     /// Core peripheral: SysTick Timer
-    pub SYST: nrf52::SYST,
+    pub SYST: nrf52832_pac::SYST,
 
     /// Core peripheral: Trace Port Interface Unit
-    pub TPIU: nrf52::TPIU,
+    pub TPIU: nrf52832_pac::TPIU,
 
     /// nRF52 peripheral: FICR
-    pub FICR: nrf52::FICR,
+    pub FICR: nrf52832_pac::FICR,
 
     /// nRF52 peripheral: UICR
-    pub UICR: nrf52::UICR,
+    pub UICR: nrf52832_pac::UICR,
 
     /// nRF52 peripheral: BPROT
-    pub BPROT: nrf52::BPROT,
+    pub BPROT: nrf52832_pac::BPROT,
 
     /// nRF52 peripheral: POWER
-    pub POWER: nrf52::POWER,
+    pub POWER: nrf52832_pac::POWER,
 
     /// nRF52 peripheral: CLOCK
-    pub CLOCK: nrf52::CLOCK,
+    pub CLOCK: nrf52832_pac::CLOCK,
 
     /// nRF52 peripheral: RADIO
-    pub RADIO: nrf52::RADIO,
+    pub RADIO: nrf52832_pac::RADIO,
 
     /// nRF52 peripheral: UARTE0
     #[cfg(not(feature = "dev"))]
-    pub UARTE0: nrf52::UARTE0,
+    pub UARTE0: nrf52832_pac::UARTE0,
 
     /// nRF52 peripheral: UART0
-    pub UART0: nrf52::UART0,
+    pub UART0: nrf52832_pac::UART0,
 
     /// nRF52 peripheral: SPIM0
-    pub SPIM0: nrf52::SPIM0,
+    pub SPIM0: nrf52832_pac::SPIM0,
 
     /// nRF52 peripheral: SPIS0
-    pub SPIS0: nrf52::SPIS0,
+    pub SPIS0: nrf52832_pac::SPIS0,
 
     /// nRF52 peripheral: TWIM0
-    pub TWIM0: nrf52::TWIM0,
+    pub TWIM0: nrf52832_pac::TWIM0,
 
     /// nRF52 peripheral: TWIS0
-    pub TWIS0: nrf52::TWIS0,
+    pub TWIS0: nrf52832_pac::TWIS0,
 
     /// nRF52 peripheral: SPI0
-    pub SPI0: nrf52::SPI0,
+    pub SPI0: nrf52832_pac::SPI0,
 
     /// nRF52 peripheral: TWI0
-    pub TWI0: nrf52::TWI0,
+    pub TWI0: nrf52832_pac::TWI0,
 
     /// nRF52 peripheral: SPIM1
-    pub SPIM1: nrf52::SPIM1,
+    pub SPIM1: nrf52832_pac::SPIM1,
 
     /// nRF52 peripheral: SPIS1
-    pub SPIS1: nrf52::SPIS1,
+    pub SPIS1: nrf52832_pac::SPIS1,
 
     /// nRF52 peripheral: TWIS1
-    pub TWIS1: nrf52::TWIS1,
+    pub TWIS1: nrf52832_pac::TWIS1,
 
     /// nRF52 peripheral: SPI1
-    pub SPI1: nrf52::SPI1,
+    pub SPI1: nrf52832_pac::SPI1,
 
     /// nRF52 peripheral: TWI1
-    pub TWI1: nrf52::TWI1,
+    pub TWI1: nrf52832_pac::TWI1,
 
     /// nRF52 peripheral: NFCT
-    pub NFCT: nrf52::NFCT,
+    pub NFCT: nrf52832_pac::NFCT,
 
     /// nRF52 peripheral: GPIOTE
-    pub GPIOTE: nrf52::GPIOTE,
+    pub GPIOTE: nrf52832_pac::GPIOTE,
 
     /// nRF52 peripheral: SAADC
-    pub SAADC: nrf52::SAADC,
+    pub SAADC: nrf52832_pac::SAADC,
 
     /// nRF52 peripheral: TIMER0
-    pub TIMER0: nrf52::TIMER0,
+    pub TIMER0: nrf52832_pac::TIMER0,
 
     /// nRF52 peripheral: TIMER1
-    pub TIMER1: nrf52::TIMER1,
+    pub TIMER1: nrf52832_pac::TIMER1,
 
     /// nRF52 peripheral: TIMER2
-    pub TIMER2: nrf52::TIMER2,
+    pub TIMER2: nrf52832_pac::TIMER2,
 
     /// nRF52 peripheral: RTC0
-    pub RTC0: nrf52::RTC0,
+    pub RTC0: nrf52832_pac::RTC0,
 
     /// nRF52 peripheral: TEMP
-    pub TEMP: nrf52::TEMP,
+    pub TEMP: nrf52832_pac::TEMP,
 
     /// nRF52 peripheral: RNG
-    pub RNG: nrf52::RNG,
+    pub RNG: nrf52832_pac::RNG,
 
     /// nRF52 peripheral: ECB
-    pub ECB: nrf52::ECB,
+    pub ECB: nrf52832_pac::ECB,
 
     /// nRF52 peripheral: CCM
-    pub CCM: nrf52::CCM,
+    pub CCM: nrf52832_pac::CCM,
 
     /// nRF52 peripheral: AAR
-    pub AAR: nrf52::AAR,
+    pub AAR: nrf52832_pac::AAR,
 
     /// nRF52 peripheral: WDT
-    pub WDT: nrf52::WDT,
+    pub WDT: nrf52832_pac::WDT,
 
     /// nRF52 peripheral: RTC1
-    pub RTC1: nrf52::RTC1,
+    pub RTC1: nrf52832_pac::RTC1,
 
     /// nRF52 peripheral: QDEC
-    pub QDEC: nrf52::QDEC,
+    pub QDEC: nrf52832_pac::QDEC,
 
     /// nRF52 peripheral: COMP
-    pub COMP: nrf52::COMP,
+    pub COMP: nrf52832_pac::COMP,
 
     /// nRF52 peripheral: LPCOMP
-    pub LPCOMP: nrf52::LPCOMP,
+    pub LPCOMP: nrf52832_pac::LPCOMP,
 
     /// nRF52 peripheral: SWI0
-    pub SWI0: nrf52::SWI0,
+    pub SWI0: nrf52832_pac::SWI0,
 
     /// nRF52 peripheral: EGU0
-    pub EGU0: nrf52::EGU0,
+    pub EGU0: nrf52832_pac::EGU0,
 
     /// nRF52 peripheral: SWI1
-    pub SWI1: nrf52::SWI1,
+    pub SWI1: nrf52832_pac::SWI1,
 
     /// nRF52 peripheral: EGU1
-    pub EGU1: nrf52::EGU1,
+    pub EGU1: nrf52832_pac::EGU1,
 
     /// nRF52 peripheral: SWI2
-    pub SWI2: nrf52::SWI2,
+    pub SWI2: nrf52832_pac::SWI2,
 
     /// nRF52 peripheral: EGU2
-    pub EGU2: nrf52::EGU2,
+    pub EGU2: nrf52832_pac::EGU2,
 
     /// nRF52 peripheral: SWI3
-    pub SWI3: nrf52::SWI3,
+    pub SWI3: nrf52832_pac::SWI3,
 
     /// nRF52 peripheral: EGU3
-    pub EGU3: nrf52::EGU3,
+    pub EGU3: nrf52832_pac::EGU3,
 
     /// nRF52 peripheral: SWI4
-    pub SWI4: nrf52::SWI4,
+    pub SWI4: nrf52832_pac::SWI4,
 
     /// nRF52 peripheral: EGU4
-    pub EGU4: nrf52::EGU4,
+    pub EGU4: nrf52832_pac::EGU4,
 
     /// nRF52 peripheral: SWI5
-    pub SWI5: nrf52::SWI5,
+    pub SWI5: nrf52832_pac::SWI5,
 
     /// nRF52 peripheral: EGU5
-    pub EGU5: nrf52::EGU5,
+    pub EGU5: nrf52832_pac::EGU5,
 
     /// nRF52 peripheral: TIMER3
-    pub TIMER3: nrf52::TIMER3,
+    pub TIMER3: nrf52832_pac::TIMER3,
 
     /// nRF52 peripheral: TIMER4
-    pub TIMER4: nrf52::TIMER4,
+    pub TIMER4: nrf52832_pac::TIMER4,
 
     /// nRF52 peripheral: PWM0
-    pub PWM0: nrf52::PWM0,
+    pub PWM0: nrf52832_pac::PWM0,
 
     /// nRF52 peripheral: PDM
-    pub PDM: nrf52::PDM,
+    pub PDM: nrf52832_pac::PDM,
 
     /// nRF52 peripheral: NVMC
-    pub NVMC: nrf52::NVMC,
+    pub NVMC: nrf52832_pac::NVMC,
 
     /// nRF52 peripheral: PPI
-    pub PPI: nrf52::PPI,
+    pub PPI: nrf52832_pac::PPI,
 
     /// nRF52 peripheral: MWU
-    pub MWU: nrf52::MWU,
+    pub MWU: nrf52832_pac::MWU,
 
     /// nRF52 peripheral: PWM1
-    pub PWM1: nrf52::PWM1,
+    pub PWM1: nrf52832_pac::PWM1,
 
     /// nRF52 peripheral: PWM2
-    pub PWM2: nrf52::PWM2,
+    pub PWM2: nrf52832_pac::PWM2,
 
     /// nRF52 peripheral: RTC2
-    pub RTC2: nrf52::RTC2,
+    pub RTC2: nrf52832_pac::RTC2,
 
     /// nRF52 peripheral: I2S
-    pub I2S: nrf52::I2S,
+    pub I2S: nrf52832_pac::I2S,
 }
 
 impl DWM1001 {
@@ -748,8 +749,8 @@ impl DW_IRQ {
     /// - This method disables interrupt handlers. No interrupt handler will be
     ///   called while this method is active.
     pub fn wait_for_interrupts<T>(&mut self,
-        nvic:   &mut nrf52::NVIC,
-        gpiote: &mut nrf52::GPIOTE,
+        nvic:   &mut nrf52832_pac::NVIC,
+        gpiote: &mut nrf52832_pac::GPIOTE,
         timer:  &mut Timer<T>,
     )
         where T: TimerExt
@@ -764,8 +765,8 @@ impl DW_IRQ {
         gpiote.intenset.modify(|_, w| w.in0().set());
 
         interrupt::free(|_| {
-            nrf52::NVIC::unpend(Interrupt::GPIOTE);
-            nrf52::NVIC::unpend(T::INTERRUPT);
+            nrf52832_pac::NVIC::unpend(Interrupt::GPIOTE);
+            nrf52832_pac::NVIC::unpend(T::INTERRUPT);
 
             nvic.enable(Interrupt::GPIOTE);
             timer.enable_interrupt(nvic);
