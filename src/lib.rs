@@ -381,7 +381,7 @@ impl DWM1001 {
                 scl: pins.p0_28.into_floating_input().degrade(),
                 sda: pins.p0_29.into_floating_input().degrade(),
             },
-            twim::Frequency::K250,
+            twim::Frequency::K100,
         );
 
         let dw_cs = pins.p0_17.into_push_pull_output(Level::High).degrade();
@@ -401,7 +401,7 @@ impl DWM1001 {
                 rts: None,
             },
             UartParity::EXCLUDED,
-            UartBaudrate::BAUD1M
+            UartBaudrate::BAUD115200
         );
 
         DWM1001 {
