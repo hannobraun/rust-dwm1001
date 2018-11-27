@@ -369,3 +369,261 @@ impl Write for WriteBuf {
         Ok(())
     }
 }
+
+macro_rules! acc_register {
+    (
+        $(
+            $reg_upper:ident,
+            $reg_addr:expr,
+            $rw:expr,
+            $default:expr; {
+                #[$doc:meta]
+                $(
+                    $first_bit:expr,
+                    $last_bit:expr,
+                    $field_upper:expr;
+                    #[$reg_doc:meta]
+                )*
+            }
+        )*
+    ) => {
+        $(
+            pub struct $reg_upper;
+        )*
+    }
+}
+
+acc_register! {
+    STATUS_REG_AUX, 0x07, RO, None; {
+        /// TODO - DOCS
+        2, 2, TDA; /// TODO - DOCS
+        6, 6, TOR; /// TODO - DOCS
+    }
+    OUT_TEMP_L, 0x0C, RO, None; {
+        /// TODO - DOCS
+        0, 7, T_LOW; /// TODO - DOCS
+    }
+    TEMP_OUT_H, 0x0D, RO, None; {
+        /// TODO - DOCS
+        0, 7, T_HIGH; /// TODO - DOCS
+    }
+    WHO_AM_I, 0x0F, RO, None; {
+        /// TODO - DOCS
+        0, 7, DEV_ID; /// TODO - DOCS
+    }
+    CTRL_REG0, 0x1E, RW, Some(0b001_0000); {
+        /// TODO - DOCS
+        7, 7, SDO_PU_DISC; /// TODO - DOCS
+    }
+    TEMP_CFG_REG, 0x1F, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        6, 7, TEMP_EN; /// TODO - DOCS
+    }
+    CTRL_REG1, 0x20, RW, Some(0b0000_0111); {
+        /// TODO - DOCS
+        0, 0, X_EN; /// TODO - DOCS
+        1, 1, Y_EN; /// TODO - DOCS
+        2, 2, Z_EN; /// TODO - DOCS
+        3, 3, LP_EN; /// TODO - DOCS
+        4, 7, ODR; /// TODO - DOCS
+    }
+    CTRL_REG2, 0x21, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 0, HP_IA1; /// TODO - DOCS
+        1, 1, HP_IA2; /// TODO - DOCS
+        2, 2, HP_CLICK; /// TODO - DOCS
+        3, 3, FDS; /// TODO - DOCS
+        4, 5, HP_CF; /// TODO - DOCS
+        6, 7, HP_M; /// TODO - DOCS
+    }
+    CTRL_REG3, 0x22, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        1, 1, I1_OVERRUN; /// TODO - DOCS
+        2, 2, I1_WTM; /// TODO - DOCS
+        4, 4, I1_ZYXDA; /// TODO - DOCS
+        5, 5, I1_IA2; /// TODO - DOCS
+        6, 6, I1_IA1; /// TODO - DOCS
+        7, 7, I1_CLICK; /// TODO - DOCS
+    }
+    CTRL_REG4, 0x23, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 0, SIM; /// TODO - DOCS
+        1, 2, ST; /// TODO - DOCS
+        3, 3, HR; /// TODO - DOCS
+        4, 5, FS; /// TODO - DOCS
+        6, 6, BLE; /// TODO - DOCS
+        7, 7, BDU; /// TODO - DOCS
+    }
+    CTRL_REG5, 0x24, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 0, D4D_INT2; /// TODO - DOCS
+        1, 1, LIR_INT2; /// TODO - DOCS
+        2, 2, D4D_INT1; /// TODO - DOCS
+        3, 3, LIR_INT1; /// TODO - DOCS
+        6, 6, FIFO_EN; /// TODO - DOCS
+        7, 7, BOOT; /// TODO - DOCS
+    }
+    CTRL_REG6, 0x25, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        1, 1, INT_POLARITY; /// TODO - DOCS
+        3, 3, I2_ACT; /// TODO - DOCS
+        4, 4, I2_BOOT; /// TODO - DOCS
+        5, 5, I2_IA2; /// TODO - DOCS
+        6, 6, I2_IA1; /// TODO - DOCS
+        7, 7, I2_CLICK; /// TODO - DOCS
+    }
+    REFERENCE, 0x26, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 7, REF; /// TODO - DOCS
+    }
+    STATUS_REG, 0x27, RO, None; {
+        /// TODO - DOCS
+        0, 0, XDA; /// TODO - DOCS
+        1, 1, YDA; /// TODO - DOCS
+        2, 2, ZDA; /// TODO - DOCS
+        3, 3, ZYXDA; /// TODO - DOCS
+        4, 4, XOR; /// TODO - DOCS
+        5, 5, YOR; /// TODO - DOCS
+        6, 6, ZOR; /// TODO - DOCS
+        7, 7, ZYXOR; /// TODO - DOCS
+    }
+    OUT_X_L, 0x28, RO, None; {
+        /// TODO - DOCS
+        0, 7, X_ACC_LOW; /// TODO - DOCS
+    }
+    OUT_X_H, 0x29, RO, None; {
+        /// TODO - DOCS
+        0, 7, X_ACC_HIGH; /// TODO - DOCS
+    }
+    OUT_Y_L, 0x2A, RO, None; {
+        /// TODO - DOCS
+        0, 7, Y_ACC_LOW; /// TODO - DOCS
+    }
+    OUT_Y_H, 0x2B, RO, None; {
+        /// TODO - DOCS
+        0, 7, Y_ACC_HIGH; /// TODO - DOCS
+    }
+    OUT_Z_L, 0x2C, RO, None; {
+        /// TODO - DOCS
+        0, 7, Z_ACC_LOW; /// TODO - DOCS
+    }
+    OUT_Z_H, 0x2D, RO, None; {
+        /// TODO - DOCS
+        0, 7, Z_ACC_HIGH; /// TODO - DOCS
+    }
+    FIFO_CTRL_REG, 0x2E, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 4, FTH; /// TODO - DOCS
+        5, 5, TR; /// TODO - DOCS
+        6, 7, FM; /// TODO - DOCS
+    }
+    FIFO_SRC_REG, 0x2F, RO, None; {
+        /// TODO - DOCS
+        0, 4, FSS; /// TODO - DOCS
+        5, 5, EMPTY; /// TODO - DOCS
+        6, 6, OVRN_FIFO; /// TODO - DOCS
+        7, 7, WTM; /// TODO - DOCS
+    }
+    INT1_CFG, 0x30, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 0, XLIE; /// TODO - DOCS
+        1, 1, XHIE; /// TODO - DOCS
+        2, 2, YLIE; /// TODO - DOCS
+        3, 3, YHIE; /// TODO - DOCS
+        4, 4, ZLIE; /// TODO - DOCS
+        5, 5, ZHIE; /// TODO - DOCS
+        6, 6, SIX_D; /// TODO - DOCS
+        7, 7, AOI; /// TODO - DOCS
+    }
+    INT1_SRC, 0x31, RO, None; {
+        /// TODO - DOCS
+        0, 0, XL; /// TODO - DOCS
+        1, 1, XH; /// TODO - DOCS
+        2, 2, YL; /// TODO - DOCS
+        3, 3, YH; /// TODO - DOCS
+        4, 4, ZL; /// TODO - DOCS
+        5, 5, ZH; /// TODO - DOCS
+        6, 6, IA; /// TODO - DOCS
+    }
+    INT1_THS, 0x32, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 6, THS; /// TODO - DOCS
+    }
+    INT1_DURATION, 0x33, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 6, DUR; /// TODO - DOCS
+    }
+    INT2_CFG, 0x34, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 0, XLIE; /// TODO - DOCS
+        1, 1, XHIE; /// TODO - DOCS
+        2, 2, YLIE; /// TODO - DOCS
+        3, 3, YHIE; /// TODO - DOCS
+        4, 4, ZLIE; /// TODO - DOCS
+        5, 5, ZHIE; /// TODO - DOCS
+        6, 6, SIX_D; /// TODO - DOCS
+        7, 7, AOI; /// TODO - DOCS
+    }
+    INT2_SRC, 0x35, RO, None; {
+        /// TODO - DOCS
+        0, 0, XL; /// TODO - DOCS
+        1, 1, XH; /// TODO - DOCS
+        2, 2, YL; /// TODO - DOCS
+        3, 3, YH; /// TODO - DOCS
+        4, 4, ZL; /// TODO - DOCS
+        5, 5, ZH; /// TODO - DOCS
+        6, 6, IA; /// TODO - DOCS
+    }
+    INT2_THS, 0x36, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 6, THS; /// TODO - DOCS
+    }
+    INT2_DURATION, 0x37, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 6, DUR; /// TODO - DOCS
+    }
+    CLICK_CFG, 0x38, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 0, XS; /// TODO - DOCS
+        1, 1, XD; /// TODO - DOCS
+        2, 2, YS; /// TODO - DOCS
+        3, 3, YD; /// TODO - DOCS
+        4, 4, ZS; /// TODO - DOCS
+        5, 5, ZD; /// TODO - DOCS
+    }
+    CLICK_SRC, 0x39, RO, None; {
+        /// TODO - DOCS
+        0, 0, X_CD; /// TODO - DOCS
+        1, 1, Y_CD; /// TODO - DOCS
+        2, 2, Z_CD; /// TODO - DOCS
+        3, 3, SIGN; /// TODO - DOCS
+        4, 4, S_CLICK; /// TODO - DOCS
+        5, 5, D_CLICK; /// TODO - DOCS
+        6, 6, IA; /// TODO - DOCS
+    }
+    CLICK_THS, 0x3A, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 6, THS; /// TODO - DOCS
+        7, 7, LIR_CLICK; /// TODO - DOCS
+    }
+    TIME_LIMIT, 0x3B, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 6, TLI; /// TODO - DOCS
+    }
+    TIME_LATENCY, 0x3C, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 7, TLA; /// TODO - DOCS
+    }
+    TIME_WINDOW, 0x3D, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 7, TW; /// TODO - DOCS
+    }
+    ACT_THS, 0x3E, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 6, ACTH; /// TODO - DOCS
+    }
+    ACT_DUR, 0x3F, RW, Some(0b0000_0000); {
+        /// TODO - DOCS
+        0, 7, ACTD; /// TODO - DOCS
+    }
+}
