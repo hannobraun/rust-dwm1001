@@ -1,5 +1,5 @@
 # Cargo
-/target
+target/
 /Cargo.lock
 
 # OpenOCD
