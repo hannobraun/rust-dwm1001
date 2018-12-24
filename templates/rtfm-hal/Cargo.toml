@@ -1,0 +1,15 @@
+[package]
+name = "rtfm-hal"
+version = "0.1.0"
+authors = ["James Munns <james.munns@ferrous-systems.com>"]
+edition = "2018"
+
+[dependencies]
+cortex-m-rtfm = "0.4"
+panic-halt = "0.2"
+
+[dependencies.nrf52832-hal]
+version = "0.6"
+
+[dependencies.nrf52832-pac]
+version = "0.6"

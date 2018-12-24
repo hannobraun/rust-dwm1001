@@ -1,6 +1,6 @@
 # Cargo
 target/
-/Cargo.lock
+Cargo.lock
 
 # OpenOCD
 /openocd.log
