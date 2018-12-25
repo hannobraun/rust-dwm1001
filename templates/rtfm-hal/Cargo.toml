@@ -5,8 +5,13 @@ authors = ["James Munns <james.munns@ferrous-systems.com>"]
 edition = "2018"
 
 [dependencies]
-cortex-m-rtfm = "0.4"
 panic-halt = "0.2"
+embedded-hal = "0.2"
+cortex-m = "0.5"
+
+[dependencies.cortex-m-rtfm]
+version = "0.4"
+features = ["timer-queue"]
 
 [dependencies.nrf52832-hal]
 version = "0.6"
