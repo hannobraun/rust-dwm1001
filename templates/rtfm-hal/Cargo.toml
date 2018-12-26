@@ -8,6 +8,7 @@ edition = "2018"
 panic-halt = "0.2"
 embedded-hal = "0.2"
 cortex-m = "0.5"
+heapless = "0.4"
 
 [dependencies.cortex-m-rtfm]
 version = "0.4"
