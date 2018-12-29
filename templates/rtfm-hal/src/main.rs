@@ -38,7 +38,8 @@ const APP: () = {
     // Late Resources
     static mut UART: Uarte<UARTE0> = ();
     static mut LED_GREEN: P0_Pin<Output<PushPull>>  = ();
-    static mut LED_RED: P0_Pin<Output<PushPull>>    = ();
+    static mut LED_RED_1: P0_Pin<Output<PushPull>>  = ();
+    static mut LED_RED_2: P0_Pin<Output<PushPull>>  = ();
     static mut SWITCH_PIN: P0_Pin<Input<Floating>>  = ();
     static mut REG_GPIOTE: REGISTER_GPIOTE          = ();
     static mut STATUS: Status                       = ();
@@ -100,7 +101,8 @@ const APP: () = {
         // 22: D11 / Red
         // 31: D10 / Green
         LED_GREEN = pins.p0_31.degrade().into_push_pull_output(Level::High);
-        LED_RED = pins.p0_14.degrade().into_push_pull_output(Level::High);
+        LED_RED_1 = pins.p0_14.degrade().into_push_pull_output(Level::High);
+        LED_RED_2 = pins.p0_22.degrade().into_push_pull_output(Level::High);
 
         SWITCH_PIN = in_pin;
         REG_GPIOTE = device.GPIOTE;
@@ -116,13 +118,14 @@ const APP: () = {
 
     /// This task blinks an LED, and sends data over the UART
     /// at a fixed periodic rate, using the `timer-queue` feature
-    #[task(resources = [LED_RED, UART, MESSAGE, STATUS, FORMAT_BUF], schedule = [blink])]
+    #[task(resources = [LED_RED_1, LED_RED_2, UART, MESSAGE, STATUS, FORMAT_BUF], schedule = [blink])]
     fn blink() {
         static mut IS_HIGH: bool = true;
 
         let next_interval = if *IS_HIGH {
             // Turn LED on (active low)
-            (*resources.LED_RED).set_low();
+            (*resources.LED_RED_1).set_low();
+            (*resources.LED_RED_2).set_high();
 
             // // Greet the world
             // resources.UART.write(
@@ -143,13 +146,15 @@ const APP: () = {
                 .unwrap();
 
             // Short interval
-            TICKS_PER_SEC / 16
+            TICKS_PER_SEC / 2
         } else {
             // Turn LED off (active low)
-            (*resources.LED_RED).set_high();
+            (*resources.LED_RED_1).set_high();
+            (*resources.LED_RED_2).set_low();
+
 
             // Long interval
-            15 * (TICKS_PER_SEC / 16)
+            (TICKS_PER_SEC / 2)
         };
 
         *IS_HIGH = !*IS_HIGH;
