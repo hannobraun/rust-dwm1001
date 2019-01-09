@@ -6,11 +6,15 @@
 #![deny(missing_docs)]
 #![deny(warnings)]
 
-pub use cortex_m;
+pub use cortex_m::{
+    self,
+    singleton,
+};
 pub use cortex_m_rt;
 pub use dw1000;
 pub use embedded_hal;
 pub use nrf52832_hal;
+use bbqueue::{Producer, Consumer};
 
 pub use dw1000::{
     block_timeout,
@@ -23,6 +27,7 @@ pub mod prelude {
 }
 
 pub mod debug;
+
 
 
 use cortex_m::{
@@ -63,7 +68,7 @@ use nrf52832_hal::{
     },
     uarte::{
         self,
-        Uarte,
+        UarteAsync,
         Parity as UartParity,
         Baudrate as UartBaudrate,
     },
@@ -86,7 +91,7 @@ pub struct DWM1001 {
     ///
     /// This is only available if the `dev` feature is enabled.
     #[cfg(feature = "dev")]
-    pub uart: Uarte<nrf52::UARTE0>,
+    pub uart: UarteAsync<nrf52::UARTE0>,
 
     /// The DW_RST pin (P0.24 on the nRF52)
     ///
@@ -132,7 +137,7 @@ pub struct DWM1001 {
     pub MPU: nrf52::MPU,
 
     /// Core peripheral: Nested Vector Interrupt Controller
-    pub NVIC: nrf52::NVIC,
+    // pub NVIC: nrf52::NVIC,
 
     /// Core peripheral: System Control Block
     pub SCB: nrf52::SCB,
@@ -327,10 +332,12 @@ impl DWM1001 {
     ///
     /// This method will return an instance of `DWM1001` the first time it is
     /// called. It will return only `None` on subsequent calls.
-    pub fn take() -> Option<Self> {
+    pub fn take(prod: Producer, cons: Consumer) -> Option<Self> {
         Some(Self::new(
             CorePeripherals::take()?,
             Peripherals::take()?,
+            prod,
+            cons,
         ))
     }
 
@@ -346,14 +353,16 @@ impl DWM1001 {
     /// behavior and circumventing safety guarantees in many ways.
     ///
     /// Always use `DWM1001::take`, unless you really know what you're doing.
-    pub unsafe fn steal() -> Self {
+    pub unsafe fn steal(prod: Producer, cons: Consumer) -> Self {
         Self::new(
             CorePeripherals::steal(),
             Peripherals::steal(),
+            prod,
+            cons,
         )
     }
 
-    fn new(cp: CorePeripherals, p: Peripherals) -> Self {
+    fn new(cp: CorePeripherals, p: Peripherals, prod: Producer, cons: Consumer) -> Self {
         let pins = p.P0.split();
 
         // Some notes about the hardcoded configuration of `Spim`:
@@ -379,21 +388,25 @@ impl DWM1001 {
         let dw_cs = pins.p0_17.into_push_pull_output(Level::High).degrade();
 
         // Some notes about the hardcoded configuration of `Uarte`:
-        // - On the DWM1001-DEV board, the UART is connected (without CTS/RTS flow control)
+        // - On the DWM10E043401-DEV board, the UART is connected (without CTS/RTS flow control)
         //   to the attached debugger chip. This UART is exposed via USB as a virtual
         //   port, which is capable of 1Mbps baudrate
         // - Although these ports/pins are exposed generally on the DWM1001 package, and are marked
         //   as UART RXD and TXD, they are not necessarily used as such by the firmware. For this reason,
         //   non-`dev` features may be used to manually configure the serial port
         #[cfg(feature = "dev")]
-        let uarte0 = p.UARTE0.constrain(uarte::Pins {
+        let uarte0 = p.UARTE0.constrain(
+            cp.NVIC,
+            uarte::Pins {
                 txd: pins.p0_05.into_push_pull_output(Level::High).degrade(),
                 rxd: pins.p0_11.into_push_pull_output(Level::High).degrade(),
                 cts: None,
                 rts: None,
             },
             UartParity::EXCLUDED,
-            UartBaudrate::BAUD1M
+            UartBaudrate::BAUD1M,
+            prod,
+            cons,
         );
 
         DWM1001 {
@@ -453,7 +466,7 @@ impl DWM1001 {
             FPU  : cp.FPU,
             ITM  : cp.ITM,
             MPU  : cp.MPU,
-            NVIC : cp.NVIC,
+            // NVIC : cp.NVIC,
             SCB  : cp.SCB,
             SYST : cp.SYST,
             TPIU : cp.TPIU,
@@ -776,3 +789,4 @@ impl DW_IRQ {
         gpiote.intenclr.modify(|_, w| w.in0().clear());
     }
 }
+
