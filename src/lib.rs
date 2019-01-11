@@ -145,7 +145,7 @@ pub struct DWM1001 {
     pub MPU: nrf52::MPU,
 
     /// Core peripheral: Nested Vector Interrupt Controller
-    // pub NVIC: nrf52::NVIC,
+    pub NVIC: nrf52::NVIC,
 
     /// Core peripheral: System Control Block
     pub SCB: nrf52::SCB,
@@ -472,7 +472,7 @@ impl DWM1001 {
             FPU  : cp.FPU,
             ITM  : cp.ITM,
             MPU  : cp.MPU,
-            // NVIC : cp.NVIC,
+            NVIC : cp.NVIC,
             SCB  : cp.SCB,
             SYST : cp.SYST,
             TPIU : cp.TPIU,
