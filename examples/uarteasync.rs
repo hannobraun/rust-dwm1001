@@ -13,6 +13,7 @@ use dwm1001::{
         timer::Timer,
     },
     DWM1001,
+    Buffers,
 };
 
 const MEME: &[u8] = b"\r\n\r\nDid you ever hear the tragedy of Darth Plagueis The Wise? I thought not. It's not a story the Jedi would tell you. It's a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. Ironic. He could save others from death, but not himself.\r\n\r\n";
@@ -21,7 +22,12 @@ const MEME: &[u8] = b"\r\n\r\nDid you ever hear the tragedy of Darth Plagueis Th
 fn main() -> ! {
     let (prod, cons) = cortex_m_bbq!(2048).unwrap().split();
 
-    let mut dwm1001 = DWM1001::take(prod, cons).unwrap();
+    let bfrs = Buffers {
+        uart_tx_producer: prod,
+        uart_tx_consumer: cons,
+    };
+
+    let mut dwm1001 = DWM1001::take(bfrs).unwrap();
 
     let mut timer = dwm1001.TIMER0.constrain();
 

@@ -28,7 +28,15 @@ pub mod prelude {
 
 pub mod debug;
 
+/// Configuration structure holding any configurable
+/// FIFO buffers usable for Async processing of data
+pub struct Buffers {
+    /// Producer half (used by app code) of the UART FIFO
+    pub uart_tx_producer: Producer,
 
+    /// Consumer half (used by DMA) of the UART FIFO
+    pub uart_tx_consumer: Consumer,
+}
 
 use cortex_m::{
     asm,
@@ -66,9 +74,9 @@ use nrf52832_hal::{
         Output,
         PushPull,
     },
-    uarte::{
-        self,
+    uarte::nonblocking::{
         UarteAsync,
+        Pins as UarteAsyncPins,
         Parity as UartParity,
         Baudrate as UartBaudrate,
     },
@@ -332,12 +340,11 @@ impl DWM1001 {
     ///
     /// This method will return an instance of `DWM1001` the first time it is
     /// called. It will return only `None` on subsequent calls.
-    pub fn take(prod: Producer, cons: Consumer) -> Option<Self> {
+    pub fn take(bfrs: Buffers) -> Option<Self> {
         Some(Self::new(
             CorePeripherals::take()?,
             Peripherals::take()?,
-            prod,
-            cons,
+            bfrs,
         ))
     }
 
@@ -353,16 +360,15 @@ impl DWM1001 {
     /// behavior and circumventing safety guarantees in many ways.
     ///
     /// Always use `DWM1001::take`, unless you really know what you're doing.
-    pub unsafe fn steal(prod: Producer, cons: Consumer) -> Self {
+    pub unsafe fn steal(bfrs: Buffers) -> Self {
         Self::new(
             CorePeripherals::steal(),
             Peripherals::steal(),
-            prod,
-            cons,
+            bfrs
         )
     }
 
-    fn new(cp: CorePeripherals, p: Peripherals, prod: Producer, cons: Consumer) -> Self {
+    fn new(mut cp: CorePeripherals, p: Peripherals, bfrs: Buffers) -> Self {
         let pins = p.P0.split();
 
         // Some notes about the hardcoded configuration of `Spim`:
@@ -395,9 +401,9 @@ impl DWM1001 {
         //   as UART RXD and TXD, they are not necessarily used as such by the firmware. For this reason,
         //   non-`dev` features may be used to manually configure the serial port
         #[cfg(feature = "dev")]
-        let uarte0 = p.UARTE0.constrain(
-            cp.NVIC,
-            uarte::Pins {
+        let uarte0 = p.UARTE0.constrain_async(
+            &mut cp.NVIC,
+            UarteAsyncPins {
                 txd: pins.p0_05.into_push_pull_output(Level::High).degrade(),
                 rxd: pins.p0_11.into_push_pull_output(Level::High).degrade(),
                 cts: None,
@@ -405,8 +411,8 @@ impl DWM1001 {
             },
             UartParity::EXCLUDED,
             UartBaudrate::BAUD1M,
-            prod,
-            cons,
+            bfrs.uart_tx_producer,
+            bfrs.uart_tx_consumer,
         );
 
         DWM1001 {
