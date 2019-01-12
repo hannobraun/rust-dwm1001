@@ -28,15 +28,11 @@ fn main() -> ! {
     };
 
     let mut dwm1001 = DWM1001::take(bfrs).unwrap();
-
     let mut timer = dwm1001.TIMER0.constrain();
 
     unsafe {
         cortex_m::interrupt::enable();
     }
-
-    let mut out: [u8; 1024] = [0u8; 1024];
-    out[..MEME.len()].copy_from_slice(MEME);
 
     loop {
         dwm1001.leds.D12.enable();
@@ -44,7 +40,7 @@ fn main() -> ! {
         dwm1001.leds.D12.disable();
         delay(&mut timer, 5_000); // 230ms
 
-        dwm1001.uart.write_async(&out[..MEME.len()]).unwrap();
+        dwm1001.uart.write_async(&MEME).unwrap();
     }
 }
 
