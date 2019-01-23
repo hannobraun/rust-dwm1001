@@ -431,10 +431,10 @@ impl DWM1001 {
 
             #[cfg(feature = "dev")]
             leds: Leds {
-                D9 : Led::new(pins.p0_30.degrade()),
-                D10: Led::new(pins.p0_31.degrade()),
-                D11: Led::new(pins.p0_22.degrade()),
-                D12: Led::new(pins.p0_14.degrade()),
+                D9_GREEN : Led::new(pins.p0_30.degrade()),
+                D10_GREEN: Led::new(pins.p0_31.degrade()),
+                D11_RED: Led::new(pins.p0_22.degrade()),
+                D12_RED: Led::new(pins.p0_14.degrade()),
             },
 
             DW_RST: DW_RST::new(pins.p0_24),
@@ -639,17 +639,17 @@ pub struct Pins {
 #[allow(non_snake_case)]
 #[cfg(feature = "dev")]
 pub struct Leds {
-    /// DWM1001-Dev: D9; DWM1001: GPIO_30; nRF52: P0.30
-    pub D9: Led,
+    /// DWM1001-Dev: D9; DWM1001: GPIO_30; nRF52: P0.30; Top Green LED
+    pub D9_GREEN: Led,
 
-    /// DWM1001-Dev: D10; DWM1001: GPIO_31; nRF52: P0.31
-    pub D10: Led,
+    /// DWM1001-Dev: D10; DWM1001: GPIO_31; nRF52: P0.31; Bottom Green LED
+    pub D10_GREEN: Led,
 
-    /// DWM1001-Dev: D11; DWM1001: GPIO_22; nRF52: P0.22
-    pub D11: Led,
+    /// DWM1001-Dev: D11; DWM1001: GPIO_22; nRF52: P0.22; Bottom Red LED
+    pub D11_RED: Led,
 
-    /// DWM1001-Dev: D12; DWM1001: GPIO_14; nRF52: P0.14
-    pub D12: Led,
+    /// DWM1001-Dev: D12; DWM1001: GPIO_14; nRF52: P0.14; Top Red LED
+    pub D12_RED: Led,
 }
 
 
