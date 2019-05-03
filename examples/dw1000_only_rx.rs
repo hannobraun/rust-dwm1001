@@ -10,12 +10,11 @@ extern crate panic_semihosting;
 use cortex_m_rt::entry;
 
 use dwm1001::{
-    block_timeout,
-    debug,
-    DWM1001,
-    nrf52832_hal::Delay,
+    block_timeout, debug,
+    nrf52832_hal::{Delay, Timer},
     prelude::*,
     print,
+    DWM1001,
 };
 
 
@@ -31,7 +30,7 @@ fn main() -> ! {
         .expect("Failed to initialize DW1000");
 
     // Configure timer
-    let mut timer = dwm1001.TIMER0.constrain();
+    let mut timer = Timer::new(dwm1001.TIMER0);
 
     'outer: loop {
         let mut rx = dw1000

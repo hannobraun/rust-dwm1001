@@ -1,28 +1,22 @@
 #![no_main]
 #![no_std]
 
-
 extern crate panic_semihosting;
-
 
 use cortex_m_rt::entry;
 use dwm1001;
 use nb::block;
 
 use dwm1001::{
-    nrf52832_hal::{
-        prelude::*,
-        timer::Timer,
-    },
+    nrf52832_hal::{prelude::*, timer::*},
     DWM1001,
 };
-
 
 #[entry]
 fn main() -> ! {
     let mut dwm1001 = DWM1001::take().unwrap();
 
-    let mut timer = dwm1001.TIMER0.constrain();
+    let mut timer = Timer::new(dwm1001.TIMER0);
 
     loop {
         dwm1001.leds.D12.enable();
@@ -32,8 +26,10 @@ fn main() -> ! {
     }
 }
 
-
-fn delay<T>(timer: &mut Timer<T>, cycles: u32) where T: TimerExt {
+fn delay<T>(timer: &mut Timer<T>, cycles: u32)
+where
+    T: Instance,
+{
     timer.start(cycles);
     block!(timer.wait()).unwrap();
 }
