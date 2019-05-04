@@ -102,6 +102,9 @@ use nrf52832_hal::{
     },
 };
 
+#[cfg(feature = "dev")]
+use embedded_hal::digital::OutputPin;
+
 /// Optional Configuration struct for SPIM, not including pins
 pub struct SpimConfig {
     /// SPIM Frequency
@@ -123,7 +126,9 @@ pub fn new_usb_uarte<TX, RX>(
     rxd_pin: P0_11<RX>,
     config: UsbUarteConfig
 ) -> Uarte<nrf52::UARTE0> {
-    uart0.constrain(uarte::Pins {
+    Uarte::new(
+        uart0,
+        uarte::Pins {
             txd: txd_pin.into_push_pull_output(Level::High).degrade(),
             rxd: rxd_pin.into_floating_input().degrade(),
             cts: None,
