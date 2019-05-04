@@ -119,3 +119,7 @@ opt-level     = 3
 
 [package.metadata.docs.rs]
 all-features = true
+
+[patch.crates-io.nrf52-hal-common]
+git = "https://github.com/nrf-rs/nrf52-hal.git"
+rev = "99940017bc9b35708c9c692e261ba76010ed7888"

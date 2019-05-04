@@ -46,7 +46,6 @@ use cortex_m::{
 use dw1000::DW1000;
 use embedded_hal::blocking::delay::DelayMs;
 use nrf52832_hal::{
-    prelude::*,
     gpio::{
         p0::{
             self,
@@ -56,6 +55,7 @@ use nrf52832_hal::{
             P0_20,
             P0_28,
             P0_29,
+            Parts,
         },
         Floating,
         Input,
@@ -73,6 +73,7 @@ use nrf52832_hal::{
         TWIM1,
     },
     spim,
+    timer::Instance as TimerInstance,
     twim,
     uarte::{
         Parity as UartParity,
@@ -152,7 +153,9 @@ pub fn new_dw1000<SCK, MOSI, MISO, CS>(
         orc: 0,
     });
 
-    let spim = spim.constrain(spim::Pins {
+    let spim = Spim::new(
+        spim,
+        spim::Pins {
             sck : sck.into_push_pull_output(Level::Low).degrade(),
             mosi: Some(mosi.into_push_pull_output(Level::Low).degrade()),
             miso: Some(miso.into_floating_input().degrade()),
@@ -171,7 +174,8 @@ pub fn new_acc_twim<SCL, SDA>(
     scl: P0_28<SCL>,
     sda: P0_29<SDA>,
 ) -> Twim<nrf52::TWIM1> {
-    twim.constrain(
+    Twim::new(
+        twim,
         twim::Pins {
             scl: scl.into_floating_input().degrade(),
             sda: sda.into_floating_input().degrade(),
@@ -494,7 +498,7 @@ impl DWM1001 {
     }
 
     fn new(cp: CorePeripherals, p: Peripherals) -> Self {
-        let pins = p.P0.split();
+        let pins = Parts::new(p.P0);
 
 
         // Some notes about the hardcoded configuration of `Uarte`:
@@ -871,7 +875,7 @@ impl DW_IRQ {
     ///
     /// There are two gotchas that must be kept in mind when using this method:
     /// - This method returns on _any_ interrupt, even those unrelated to the
-    ///   DW1000.
+    ///   DW1000.Timer
     /// - This method disables interrupt handlers. No interrupt handler will be
     ///   called while this method is active.
     pub fn wait_for_interrupts<T>(&mut self,
@@ -879,7 +883,7 @@ impl DW_IRQ {
         gpiote: &mut nrf52::GPIOTE,
         timer:  &mut Timer<T>,
     )
-        where T: TimerExt
+        where T: TimerInstance
     {
         gpiote.config[0].write(|w| {
             let w = w
@@ -895,7 +899,7 @@ impl DW_IRQ {
             nrf52::NVIC::unpend(T::INTERRUPT);
 
             nvic.enable(Interrupt::GPIOTE);
-            timer.enable_interrupt(nvic);
+            timer.enable_interrupt(Some(nvic));
 
             asm::dsb();
             asm::wfi();
@@ -903,7 +907,7 @@ impl DW_IRQ {
             // If we don't do this, the (probably non-existing) interrupt
             // handler will be called as soon as we exit this closure.
             nvic.disable(Interrupt::GPIOTE);
-            timer.disable_interrupt(nvic);
+            timer.disable_interrupt(Some(nvic));
         });
 
         gpiote.events_in[0].write(|w| unsafe { w.bits(0) });
