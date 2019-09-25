@@ -1,3 +1,7 @@
+# THIS REPOSITORY IS DEPRECATED.
+
+It has been merged into [https://github.com/braun-embedded/rust-dw1000](https://github.com/braun-embedded/rust-dw1000).
+
 # DWM1001 Board Support Crate [![crates.io](https://img.shields.io/crates/v/dwm1001.svg)](https://crates.io/crates/dwm1001) [![Documentation](https://docs.rs/dwm1001/badge.svg)](https://docs.rs/dwm1001) [![Build Status](https://travis-ci.org/braun-embedded/rust-dwm1001.svg?branch=master)](https://travis-ci.org/braun-embedded/rust-dwm1001)
 
 ## Introduction
